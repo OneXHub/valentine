@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Valentine's Proposal</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&family=Montserrat:wght@400;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            height: 100vh;
+            width: 100vw;
+            font-family: 'Montserrat', sans-serif;
+            background: radial-gradient(circle at top, #1a0f1a, #0f0b12 70%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #f5f5f5;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ===== НОВИЙ ФОН З СЕРДЕЧКАМИ ===== */
+        body::before {
+            content: ""; /* Пустий контент */
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.08; /* Дуже легка прозорість для ніжного ефекту */
+
+            /* Використовуємо SVG іконку сердечка як фон */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%23d4af37' d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E");
+            
+            /* Змушуємо фон повторюватися по обох осях */
+            background-repeat: repeat;
+            
+            /* Розмір одного сердечка і відстань між ними (змінюй ці числа, щоб зробити густіше або рідше) */
+            background-size: 60px 60px;
+            background-position: center;
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 50px;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
+            max-width: 90%;
+            width: 600px;
+            opacity: 0;
+            transform: translateY(40px);
+            animation: fadeUp 1.2s ease forwards;
+        }
+
+        .hh {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(32px, 5vw, 64px);
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #d4af37, #f8e27a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .pp {
+            font-size: clamp(18px, 3vw, 24px);
+            margin-bottom: 40px;
+            color: #d9cfcf;
+        }
+
+        .image {
+            width: 200px;
+            max-width: 100%;
+            margin-bottom: 30px;
+            filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.6));
+            border-radius: 15px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .button, button {
+            min-width: 140px;
+            padding: 14px 30px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+            font-family: 'Montserrat', sans-serif;
+            white-space: nowrap;
+            border: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .yes {
+            background: linear-gradient(45deg, #6e0f2e, #a4163a);
+            color: white;
+            z-index: 20;
+        }
+
+        .yes:hover {
+            background: linear-gradient(45deg, #a4163a, #d90429);
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+        }
+
+        #no-button {
+            background: transparent;
+            border: 2px solid #d4af37 !important;
+            color: #d4af37;
+            position: relative;
+            z-index: 10000;
+            transition: top 0.2s ease-out, left 0.2s ease-out, transform 0.2s;
+        }
+
+        #no-button:hover {
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        #bee {
+            display: none;
+            position: fixed;
+            width: 250px;
+            z-index: 2000;
+            pointer-events: none;
+        }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="Mainprompt">
+        <img class="image" src="images/cute.gif" id="main-image" alt="romantic">
+        <div class="text">
+            <h1 class="hh" id="name">Привіт, Януська!</h1>
+            <p class="pp" id="question">Ти будеш моєю Валентинкою? 💕</p>
+        </div>
+        <div class="buttons">
+            <button class="button no" id="no-button">Ні</button>
+            <button class="button yes" id="yesButton">Так</button>
+        </div>
+    </div>
+</div>
+
+<img id="bee" src="images/bee.gif" alt="bee flying">
+
+<script>
+    const noBtn = document.getElementById("no-button");
+    const yesBtn = document.getElementById("yesButton");
+    const questionText = document.getElementById("question");
+    const nameText = document.getElementById("name");
+    const mainImage = document.getElementById("main-image");
+    const bee = document.getElementById('bee');
+
+    let isInteractionStarted = false;
+
+    function moveButton() {
+        if (noBtn.parentElement !== document.body) {
+            document.body.appendChild(noBtn);
+            noBtn.style.position = "fixed";
+        }
+
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+        const btnWidth = noBtn.offsetWidth;
+        const btnHeight = noBtn.offsetHeight;
+
+        const maxLeft = screenWidth - btnWidth - 20;
+        const maxTop = screenHeight - btnHeight - 20;
+
+        const newLeft = Math.max(20, Math.random() * maxLeft);
+        const newTop = Math.max(20, Math.random() * maxTop);
+
+        noBtn.style.left = newLeft + "px";
+        noBtn.style.top = newTop + "px";
+
+        if (!isInteractionStarted) {
+            mainImage.src = "images/gun.gif";
+            questionText.textContent = "Альо, ти що там задумала? 🤔";
+            if (nameText) nameText.style.display = "none";
+            isInteractionStarted = true;
+        }
+    }
+
+    noBtn.addEventListener("mouseenter", moveButton);
+    noBtn.addEventListener("touchstart", (e) => { e.preventDefault(); moveButton(); });
+    noBtn.addEventListener("click", (e) => { e.preventDefault(); moveButton(); });
+
+    yesBtn.addEventListener("click", () => {
+        noBtn.remove();
+        yesBtn.remove();
+        if(nameText) nameText.remove();
+
+        questionText.textContent = "Ти моя бусінка 😘";
+        questionText.style.fontSize = "clamp(24px, 5vw, 40px)";
+        questionText.style.color = "#fff";
+        mainImage.src = "images/kiss.gif";
+
+        startBee();
+    });
+
+    function startBee() {
+        bee.style.display = 'block';
+        let x = window.innerWidth / 2;
+        let y = window.innerHeight / 2;
+        let dx = 6;
+        let dy = 4;
+
+        function animate() {
+            const screenW = window.innerWidth;
+            const screenH = window.innerHeight;
+            const beeW = bee.offsetWidth;
+            const beeH = bee.offsetHeight;
+
+            x += dx;
+            y += dy;
+
+            if (x + beeW >= screenW || x <= 0) dx *= -1;
+            if (y + beeH >= screenH || y <= 0) dy *= -1;
+
+            bee.style.left = x + 'px';
+            bee.style.top = y + 'px';
+
+            requestAnimationFrame(animate);
+        }
+        animate();
+    }
+</script>
+
+</body>
+</html>
