@@ -27,22 +27,16 @@
             position: relative;
         }
 
-        /* ===== НОВИЙ ФОН З СЕРДЕЧКАМИ ===== */
+        /* ФОН З СЕРДЕЧКАМИ */
         body::before {
-            content: ""; /* Пустий контент */
+            content: "";
             position: fixed;
             inset: 0;
             z-index: 0;
             pointer-events: none;
-            opacity: 0.08; /* Дуже легка прозорість для ніжного ефекту */
-
-            /* Використовуємо SVG іконку сердечка як фон */
+            opacity: 0.08;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%23d4af37' d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E");
-            
-            /* Змушуємо фон повторюватися по обох осях */
             background-repeat: repeat;
-            
-            /* Розмір одного сердечка і відстань між ними (змінюй ці числа, щоб зробити густіше або рідше) */
             background-size: 60px 60px;
             background-position: center;
         }
@@ -135,12 +129,15 @@
             background: rgba(212, 175, 55, 0.1);
         }
 
+        /* Бджілка */
         #bee {
             display: none;
             position: fixed;
-            width: 250px;
+            width: 100px;
             z-index: 2000;
             pointer-events: none;
+            /* Додаємо плавність повороту бджілки, якщо захочемо її крутити */
+            transition: transform 0.1s linear; 
         }
 
         @keyframes fadeUp {
@@ -180,9 +177,12 @@
     let isInteractionStarted = false;
 
     function moveButton() {
+        const currentWidth = noBtn.offsetWidth;
         if (noBtn.parentElement !== document.body) {
             document.body.appendChild(noBtn);
             noBtn.style.position = "fixed";
+            noBtn.style.width = currentWidth + "px";
+            noBtn.style.textAlign = "center"; 
         }
 
         const screenWidth = window.innerWidth;
@@ -224,12 +224,24 @@
         startBee();
     });
 
+    // === НОВА, ПЛАВНА І ХАОТИЧНА БДЖІЛКА ===
     function startBee() {
         bee.style.display = 'block';
+        
+        // Початкова позиція
         let x = window.innerWidth / 2;
         let y = window.innerHeight / 2;
-        let dx = 6;
-        let dy = 4;
+        
+        // Швидкість (Velocity) - спочатку стоїть
+        let vx = 0;
+        let vy = 0;
+
+        // Налаштування фізики (можна погратися з цими числами)
+        const speedLimit = 8;     // Максимальна швидкість
+        const friction = 0.98;    // Тертя повітря (плавність зупинки), менше 1
+        const randomness = 0.8;   // Сила хаосу (наскільки різко смикається)
+        const edgeRepelDist = 100;// Відстань від краю, де починає відштовхувати
+        const edgeRepelForce = 0.5; // Сила відштовхування від країв
 
         function animate() {
             const screenW = window.innerWidth;
@@ -237,14 +249,38 @@
             const beeW = bee.offsetWidth;
             const beeH = bee.offsetHeight;
 
-            x += dx;
-            y += dy;
+            // 1. Додаємо ХАОС: Випадкове прискорення в кожному кадрі
+            vx += (Math.random() - 0.5) * randomness;
+            vy += (Math.random() - 0.5) * randomness;
 
-            if (x + beeW >= screenW || x <= 0) dx *= -1;
-            if (y + beeH >= screenH || y <= 0) dy *= -1;
+            // 2. Додаємо ПЛАВНІСТЬ: Тертя
+            vx *= friction;
+            vy *= friction;
 
+            // 3. Обмежуємо швидкість, щоб не літала як скажена
+            const speed = Math.sqrt(vx*vx + vy*vy);
+            if (speed > speedLimit) {
+                vx = (vx / speed) * speedLimit;
+                vy = (vy / speed) * speedLimit;
+            }
+
+            // 4. М'ЯКІ МЕЖІ: Плавно відштовхуємо від країв екрану
+            if (x < edgeRepelDist) vx += edgeRepelForce;
+            if (x > screenW - beeW - edgeRepelDist) vx -= edgeRepelForce;
+            if (y < edgeRepelDist) vy += edgeRepelForce;
+            if (y > screenH - beeH - edgeRepelDist) vy -= edgeRepelForce;
+
+            // 5. Оновлюємо позицію
+            x += vx;
+            y += vy;
+
+            // Застосовуємо координати
             bee.style.left = x + 'px';
             bee.style.top = y + 'px';
+
+            // (Опціонально) Повертаємо бджілку носом за рухом
+            // const angle = Math.atan2(vy, vx) * (180 / Math.PI);
+            // bee.style.transform = `rotate(${angle}deg)`;
 
             requestAnimationFrame(animate);
         }
